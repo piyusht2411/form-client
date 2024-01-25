@@ -2,7 +2,11 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import styles from '../styles/page.module.css'
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
+import { useLoginUserMutation } from "../services/user";
 import * as yup from "yup";
+import { useEffect } from "react";
+import { useAppDispatch } from "../store/store";
+import {setUser} from '../store/reducer/authSlice'
 
 interface IFormInput {
   email: string
@@ -19,6 +23,8 @@ const schema = yup.object().shape({
   ),
 });
 
+
+
 export default function Login() {
  
   const {
@@ -26,27 +32,26 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>({ resolver: yupResolver(schema) });
+  const dispatch = useAppDispatch()
   const navigate = useNavigate();
+  const [loginUser, {data, isSuccess, isLoading, isError, }] = useLoginUserMutation();
 
-  const onSubmit = async (formData: IFormInput) => {
-    try {
-      const res = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      console.log(data);
-      navigate("/");
-    } catch (err) {
-      console.log("Error: ", err);
+  const onSubmitHandler: SubmitHandler<IFormInput> = async(formData)=>{
+    const{email, password} = formData;
+    const result = await loginUser({email:email, password:password});
+    // navigate('/dashboard');
+    console.log(result);
+  }
+  useEffect(()=>{
+    if(isSuccess){
+      dispatch(setUser({name:data.user.name, token:data.token}));
+      navigate('/dashboard')
     }
-  };
+
+  })
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+    <form className={styles.form} onSubmit={handleSubmit(onSubmitHandler)}>
       <label className={styles.lable}>Email</label>
       <input className={styles.input} {...register("email")}/>
       {errors.email && <p>{errors.email.message}</p>}

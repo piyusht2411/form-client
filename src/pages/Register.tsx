@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from '../styles/page.module.css'
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useRegisterUserMutation } from "../services/user";
   
   interface IFormInput {
     name: string
@@ -28,29 +29,20 @@ import * as yup from "yup";
       handleSubmit,
       formState: { errors },
     } = useForm<IFormInput>({ resolver: yupResolver(schema) });
+    const [registerUser, responseInfo] = useRegisterUserMutation();
   
     const navigate = useNavigate();
 
-    const onSubmit = async (formData: IFormInput) => {
-      try {
-        const res = await fetch("http://localhost:8000/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-        const data = await res.json();
-        console.log(data);
-        navigate("/login");
-      } catch (err) {
-        console.log("Error: ", err);
-      }
-    };
+    const onSubmitHandler: SubmitHandler<IFormInput> = async(formData)=>{
+      const{name, email, password} = formData;
+      const result = await registerUser({name:name, email:email, password:password});
+      navigate("/");
+      console.log(result);
 
+    };
     return (
       
-      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+      <form className={styles.form} onSubmit={handleSubmit(onSubmitHandler)}>
              <h2>Registration Form</h2>
 
         <label className={styles.lable}>First Name</label>
