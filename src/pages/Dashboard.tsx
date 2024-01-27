@@ -2,12 +2,16 @@ import React from 'react'
 import { useAppDispatch, useAppSelector } from '../store/store'
 import { logout, selectAuth } from '../store/reducer/authSlice'
 import { useNavigate } from 'react-router-dom';
+import { useLazyLogoutUserQuery } from '../services/user';
 
 const Dashboard = () => {
     const {name} = useAppSelector(selectAuth);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const handleLogout = ()=>{
+    const [logoutUser] = useLazyLogoutUserQuery();
+    const handleLogout = async()=>{
+      const result = await logoutUser();
+      console.log(result);
       dispatch(logout());
       navigate('/');
 
