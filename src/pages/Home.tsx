@@ -16,7 +16,11 @@ const Home = () => {
 </Link>
 <Link to ='/register'><button>Register</button></Link>
    </div>
-    :<div>{name}</div>}
+    :<div>
+      <div>{name}</div>
+      <Link to ='/dashboard'><button>Dashboard</button></Link>
+
+      </div>}
     </>
     
   )

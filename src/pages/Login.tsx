@@ -57,7 +57,7 @@ export default function Login() {
       {errors.email && <p>{errors.email.message}</p>}
 
       <label className={styles.lable}>Last Name</label>
-      <input className={styles.input} {...register("password")} />
+      <input className={styles.input} {...register("password")} type="password" />
       {errors.password && <p>{errors.password.message}</p>}
 
       <input className={styles.input2} type="submit" value="Login" />
