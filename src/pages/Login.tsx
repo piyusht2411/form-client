@@ -44,7 +44,7 @@ export default function Login() {
   }
   useEffect(()=>{
     if(isSuccess){
-      dispatch(setUser({name:data.user.name, token:data.token}));
+      dispatch(setUser({name:data.user.name, authToken:data.authToken, refreshToken:data.refreshToken}));
       navigate('/dashboard')
     }
 

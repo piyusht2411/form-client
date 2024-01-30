@@ -1,7 +1,18 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
 export const userApi = createApi({
     reducerPath: 'userApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080' }),
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080' ,
+    prepareHeaders:(headers,{getState})=>{
+        const authToken=(getState() as RootState).auth.authToken;
+        const refreshToken=(getState() as RootState).auth.refreshToken;
+        if(authToken && refreshToken){
+            console.log(`Bearer ${authToken}+${refreshToken}`)
+            headers.set("authorization",`Bearer ${authToken}+${refreshToken}`);
+        }
+        return headers;
+    }
+}),
     endpoints: (builder) => ({
         registerUser: builder.mutation({
             query:(body)=>({
